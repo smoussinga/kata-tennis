@@ -13,7 +13,7 @@ public final class Constants {
 
 	public static final String GAME_START_FORMATTER_PATTERN = "Start the Tennis Game :\n Player 1 (%s) : %s\n Player 2 (%s) : %s";
 	public static final String GAME_SCORE_FORMATTER_PATTERN = "Game score (Player %d win 1 point)\n Player 1 (%s) : %s\n Player 2 (%s) : %s";
-	public static final String GAME_END_FORMATTER_PATTERN = "Game over : Player %d (%s) win the game";
+	public static final String GAME_END_FORMATTER_PATTERN = "Game score (Player %d win 1 point)\n GAME OVER : Player %d (%s) win the game";
 
 	public static final String FIRST_PLAYER_NAME_STRING = "Enter the first player name : ";
 	public static final String SECOND_PLAYER_NAME_STRING = "Enter the second player name : ";

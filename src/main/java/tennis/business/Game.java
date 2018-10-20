@@ -139,7 +139,7 @@ public class Game {
 	private String formatGameWinnerMessage(StringBuilder sb, Player playerWinner) {
 		// try-with-resources statement throws RuntimeException
 		try (Formatter fmt = new Formatter(sb)) {
-			fmt.format(GAME_END_FORMATTER_PATTERN, this.pointWinner, playerWinner.getName());
+			fmt.format(GAME_END_FORMATTER_PATTERN, this.pointWinner, this.pointWinner, playerWinner.getName());
 			this.isGameOver = true;
 		}
 		return sb.toString();

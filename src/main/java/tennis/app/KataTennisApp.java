@@ -21,15 +21,13 @@ public class KataTennisApp {
 		// first Player Name Entry
 		System.out.println(FIRST_PLAYER_NAME_STRING);
 		StringBuilder firstPlayerName = new StringBuilder(EMPTY_STRING);
-		try (Scanner firstPlayerNameEntry = new Scanner(System.in)) {
-			firstPlayerName.append(firstPlayerNameEntry.nextLine());
-		}
+		String first = new Scanner(System.in).nextLine();
+		firstPlayerName.append(first);
 		// second Player Name Entry
 		System.out.println(SECOND_PLAYER_NAME_STRING);
 		StringBuilder secondPlayerName = new StringBuilder(EMPTY_STRING);
-		try (Scanner secondPlayerNameEntry = new Scanner(System.in)) {
-			secondPlayerName.append(secondPlayerNameEntry.nextLine());
-		}
+		String second = new Scanner(System.in).nextLine();
+		secondPlayerName.append(second);
 		// Instantiate players
 		Player player1 = new Player(firstPlayerName.toString());
 		Player player2 = new Player(secondPlayerName.toString());

@@ -48,15 +48,15 @@ public class PlayerTest {
 			player.winOnePoint();
 		}
 		assertEquals(3, player.getScore());
-		assertEquals("30", player.displayScore());
+		assertEquals("40", player.displayScore());
 	}
 
 	@Test
 	public void resetGamePointTest() {
-		for (int i = 0; i <= 3; i++) {
+		for (int i = 0; i <= 2; i++) {
 			player.winOnePoint();
 		}
-		assertEquals(4, player.getScore());
+		assertEquals(3, player.getScore());
 		assertEquals("40", player.displayScore());
 		player.resetGamePoint();
 		assertEquals(0, player.getScore());

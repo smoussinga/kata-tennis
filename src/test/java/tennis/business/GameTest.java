@@ -66,7 +66,7 @@ public class GameTest {
 		game.setPointWinner(2);
 		StringBuilder sb = new StringBuilder(EMPTY_STRING);
 		try (Formatter fmt = new Formatter(sb)) {
-			fmt.format(GAME_END_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_TWO);
+			fmt.format(GAME_END_FORMATTER_PATTERN, game.getPointWinner(), game.getPointWinner(), PLAYER_TWO);
 		}
 		assertEquals(sb.toString(), game.getScoreMessage());
 	}
@@ -96,7 +96,7 @@ public class GameTest {
 		game.setPointWinner(1);
 		StringBuilder sb = new StringBuilder(EMPTY_STRING);
 		try (Formatter fmt = new Formatter(sb)) {
-			fmt.format(GAME_END_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE);
+			fmt.format(GAME_END_FORMATTER_PATTERN, game.getPointWinner(), game.getPointWinner(), PLAYER_ONE);
 		}
 		assertEquals(sb.toString(), game.getScoreMessage());
 	}
