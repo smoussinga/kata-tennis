@@ -16,6 +16,8 @@ import static main.java.tennis.app.Constants.EMPTY_STRING;
 import static main.java.tennis.app.Constants.GAME_START_FORMATTER_PATTERN;
 import static main.java.tennis.app.Constants.GAME_SCORE_FORMATTER_PATTERN;
 import static main.java.tennis.app.Constants.GAME_END_FORMATTER_PATTERN;
+import static main.java.tennis.app.Constants.DEUCE;
+import static main.java.tennis.app.Constants.ADVANTAGE;
 
 /**
  * @author smoussinga
@@ -85,13 +87,47 @@ public class GameTest {
 	}
 
 	@Test
-	public void displayGameWinnerByOnePointMessageTest() {
+	public void displayGameScoreWithDeuceMessageTest() {
 		for (int i = 0; i <= 2; i++) {
 			player2.winOnePoint();
 		}
 		for (int i = 0; i <= 2; i++) {
 			player1.winOnePoint();
 		}
+		game.setPointWinner(1);
+		StringBuilder sb = new StringBuilder(EMPTY_STRING);
+		try (Formatter fmt = new Formatter(sb)) {
+			fmt.format(GAME_SCORE_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE, DEUCE, PLAYER_TWO, DEUCE);
+		}
+		assertEquals(sb.toString(), game.getScoreMessage());
+	}
+
+	@Test
+	public void displayGameScoreWithAdvantageMessageTest() {
+		for (int i = 0; i <= 2; i++) {
+			player2.winOnePoint();
+		}
+		for (int i = 0; i <= 2; i++) {
+			player1.winOnePoint();
+		}
+		player2.winOnePoint();
+		game.setPointWinner(2);
+		StringBuilder sb = new StringBuilder(EMPTY_STRING);
+		try (Formatter fmt = new Formatter(sb)) {
+			fmt.format(GAME_SCORE_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE, "40", PLAYER_TWO, ADVANTAGE);
+		}
+		assertEquals(sb.toString(), game.getScoreMessage());
+	}
+
+	@Test
+	public void displayGameWinnerWithDeuceRuleMessageTest() {
+		for (int i = 0; i <= 2; i++) {
+			player2.winOnePoint();
+		}
+		for (int i = 0; i <= 2; i++) {
+			player1.winOnePoint();
+		}
+		player1.winOnePoint();
 		player1.winOnePoint();
 		game.setPointWinner(1);
 		StringBuilder sb = new StringBuilder(EMPTY_STRING);
