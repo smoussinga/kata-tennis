@@ -13,11 +13,14 @@ public class Player {
 
 	private String name;
 	private int score;
+	private int set;
 	private static final List<String> POINTS_SCORES_IN_GAME = Arrays.asList("0", "15", "30", "40");
+	private static final List<String> SET_SCORES_IN_GAME = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7");
 
 	public Player(String name) {
 		this.name = name;
 		this.score = 0;
+		this.set = 0;
 	}
 
 	public String getName() {
@@ -28,24 +31,48 @@ public class Player {
 		return this.score;
 	}
 
+	public int getSet() {
+		return this.set;
+	}
+
 	public static List<String> getPointsScoresInGame() {
 		return POINTS_SCORES_IN_GAME;
 	}
 
+	public static List<String> getSetScoresInGame() {
+		return SET_SCORES_IN_GAME;
+	}
+
 	/**
-	 * Increment the score of a player
+	 * Increment the points of a player
 	 */
 	public void winOnePoint() {
 		this.score++;
 	}
 
 	/**
-	 * Display the score from the fixed list
-	 * 
-	 * @return the score to display
+	 * Increment the sets of a player
 	 */
-	public String displayScore() {
+	public void winOneSet() {
+		this.set++;
+	}
+
+	/**
+	 * Display the points from the fixed list
+	 * 
+	 * @return the points to display
+	 */
+	public String displayScorePoints() {
 		return POINTS_SCORES_IN_GAME.get(this.score);
+	}
+
+	/**
+	 * Display the sets from the fixed list
+	 * 
+	 * @return the sets to display
+	 */
+	public String displayScoreSets() {
+		return SET_SCORES_IN_GAME.get(this.set);
 	}
 
 	/**

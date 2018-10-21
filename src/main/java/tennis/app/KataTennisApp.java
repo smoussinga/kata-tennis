@@ -35,7 +35,9 @@ public class KataTennisApp {
 		Game game = new Game(player1, player2);
 		while (!game.isGameOver()) {
 			String scoreDisplay = game.getScoreMessage();
-			System.out.println(scoreDisplay + NEWLINE_STRING);
+			if (!EMPTY_STRING.equals(scoreDisplay)) {
+				System.out.println(scoreDisplay + NEWLINE_STRING);
+			}
 			game.designRandomPointWinner();
 		}
 	}
