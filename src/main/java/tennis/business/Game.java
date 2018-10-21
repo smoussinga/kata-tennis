@@ -11,6 +11,7 @@ import static main.java.tennis.app.Constants.GAME_END_FORMATTER_PATTERN;
 import static main.java.tennis.app.Constants.DEUCE;
 import static main.java.tennis.app.Constants.ADVANTAGE;
 import static main.java.tennis.app.Constants.MATCH_END_SCORE_FORMATTER_PATTERN;
+import static main.java.tennis.app.Constants.TIE_BREAK_END_FORMATTER_PATTERN;
 
 /**
  * @author smoussinga
@@ -26,6 +27,7 @@ public class Game {
 	private boolean isGameOver;
 	private boolean isDeuceRule;
 	private boolean isFirstGame;
+	private boolean isTieBreakRule;
 
 	/**
 	 * @param player1
@@ -40,6 +42,7 @@ public class Game {
 		this.isGameOver = false;
 		this.isDeuceRule = false;
 		this.isFirstGame = true;
+		this.isTieBreakRule = false;
 	}
 
 	public Player getPlayer1() {
@@ -90,6 +93,14 @@ public class Game {
 		this.isFirstGame = isFirstGame;
 	}
 
+	public boolean isTieBreakRule() {
+		return isTieBreakRule;
+	}
+
+	public void setTieBreakRule(boolean isTieBreakRule) {
+		this.isTieBreakRule = isTieBreakRule;
+	}
+
 	/**
 	 * Choose a random player to win one point
 	 */
@@ -111,24 +122,24 @@ public class Game {
 	}
 
 	/**
-	 * Build the message to display
+	 * Build the message to display on the program
 	 * 
 	 * @return the message to display
 	 */
 	public String getScoreMessage() {
-		int maxSet = Math.max(this.player1.getSet(), this.player2.getSet());
-		int minSet = Math.min(this.player1.getSet(), this.player2.getSet());
-		// a player win the set and the match
-		if ((maxSet == 6 && minSet <= 4) || maxSet == 7) {
+		int maxTieBreak = Math.max(this.player1.getTieBreak(), this.player2.getTieBreak());
+		int minTieBreak = Math.min(this.player1.getTieBreak(), this.player2.getTieBreak());
+		// a player win the tie-break and the match
+		if (isTieBreakRule && maxTieBreak >= 7 && ((maxTieBreak - minTieBreak) == 2)) {
 			this.isGameOver = true;
 			return displayGameWinnerMessage();
 		} else {
-			return displayFullGameScoreMessage();
+			return displayFullSetScoreMessage();
 		}
 	}
 
 	/**
-	 * Build the message with the winner of the game
+	 * Build the message with the winner of the match
 	 * 
 	 * @return the game winner message to display
 	 */
@@ -138,19 +149,83 @@ public class Game {
 		// formatting the message to display
 		StringBuilder sb = new StringBuilder(EMPTY_STRING);
 		if (!isGameOver) {
+			return displayGameOnMessage(sb);
+		} else {
+			if (!isTieBreakRule) {
+				return displayGameWinWithGamesMessage(sb);
+			} else {
+				return displayGameWinWithTieBreakMessage(sb);
+			}
+		}
+	}
+
+	/**
+	 * Build the message with the winner of one Game or one Tie-break
+	 * 
+	 * @return the game winner message to display
+	 */
+	private String displayGameOnMessage(StringBuilder sb) {
+		if (!isTieBreakRule) {
 			if (this.pointWinner == 1) {
 				this.player1.winOneSet();
-				return formatGameWinnerMessage(sb);
 			} else {
 				this.player2.winOneSet();
-				return formatGameWinnerMessage(sb);
 			}
 		} else {
-			if (this.player1.getSet() > this.player2.getSet()) {
-				return formatMatchWinnerMessage(sb, 1, this.player1);
+			if (this.pointWinner == 1) {
+				this.player1.winOneTieBreak();
 			} else {
-				return formatMatchWinnerMessage(sb, 2, this.player2);
+				this.player2.winOneTieBreak();
 			}
+		}
+		return formatGameWinnerMessage(sb);
+	}
+
+	/**
+	 * Build the message with the winner of the match with TIE-BREAK RULE ACTIVATED
+	 * 
+	 * @return the game winner message to display
+	 */
+	private String displayGameWinWithTieBreakMessage(StringBuilder sb) {
+		if (this.player1.getTieBreak() > this.player2.getTieBreak()) {
+			return formatMatchWinnerMessage(sb, 1, this.player1);
+		} else {
+			return formatMatchWinnerMessage(sb, 2, this.player2);
+		}
+	}
+
+	/**
+	 * Build the message with the winner of the match WITHOUT TIE-BREAK RULE
+	 * ACTIVATED
+	 * 
+	 * @return the game winner message to display
+	 */
+	private String displayGameWinWithGamesMessage(StringBuilder sb) {
+		if (this.player1.getSet() > this.player2.getSet()) {
+			return formatMatchWinnerMessage(sb, 1, this.player1);
+		} else {
+			return formatMatchWinnerMessage(sb, 2, this.player2);
+		}
+	}
+
+	/**
+	 * Build the message with the full (points & sets) score of the game
+	 * 
+	 * @return the full game score message to display
+	 */
+	private String displayFullSetScoreMessage() {
+		// verify Tie-Break Rule
+		if (!isTieBreakRule && this.player1.getSet() == 6 && this.player2.getSet() == 6) {
+			isTieBreakRule = true;
+		}
+		int maxSet = Math.max(this.player1.getSet(), this.player2.getSet());
+		int minSet = Math.min(this.player1.getSet(), this.player2.getSet());
+		// a player win the set and the match
+		if (!isTieBreakRule && ((maxSet == 6 && minSet <= 4) || maxSet == 7)) {
+			this.isGameOver = true;
+			return displayGameWinnerMessage();
+		} else {
+			return displayFullGameScoreMessage();
 		}
 	}
 
@@ -237,12 +312,23 @@ public class Game {
 	 * @return the game winner message
 	 */
 	private String formatGameWinnerMessage(StringBuilder sb) {
-		// try-with-resources statement throws RuntimeException
-		try (Formatter fmt = new Formatter(sb)) {
-			fmt.format(GAME_END_FORMATTER_PATTERN, this.pointWinner, this.player1.getName(),
-					this.player1.displayScorePoints(), this.player2.getName(), this.player2.displayScorePoints(),
-					this.player1.getName(), this.player1.displayScoreSets(), this.player2.getName(),
-					this.player2.displayScoreSets());
+		if (!isTieBreakRule) {
+			// try-with-resources statement throws RuntimeException
+			try (Formatter fmt = new Formatter(sb)) {
+				fmt.format(GAME_END_FORMATTER_PATTERN, this.pointWinner, this.player1.getName(),
+						this.player1.displayScorePoints(), this.player2.getName(), this.player2.displayScorePoints(),
+						this.player1.getName(), this.player1.displayScoreSets(), this.player2.getName(),
+						this.player2.displayScoreSets());
+			}
+		} else {
+			// try-with-resources statement throws RuntimeException
+			try (Formatter fmt = new Formatter(sb)) {
+				fmt.format(TIE_BREAK_END_FORMATTER_PATTERN, this.pointWinner, this.player1.getName(),
+						this.player1.displayScorePoints(), this.player2.getName(), this.player2.displayScorePoints(),
+						this.player1.getName(), this.player1.displayScoreSets(), this.player2.getName(),
+						this.player2.displayScoreSets(), this.player1.getName(), this.player1.getTieBreak(),
+						this.player2.getName(), this.player2.getTieBreak());
+			}
 		}
 		return sb.toString();
 	}

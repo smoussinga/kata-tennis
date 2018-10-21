@@ -19,6 +19,7 @@ import static main.java.tennis.app.Constants.GAME_END_FORMATTER_PATTERN;
 import static main.java.tennis.app.Constants.DEUCE;
 import static main.java.tennis.app.Constants.ADVANTAGE;
 import static main.java.tennis.app.Constants.MATCH_END_SCORE_FORMATTER_PATTERN;
+import static main.java.tennis.app.Constants.TIE_BREAK_END_FORMATTER_PATTERN;
 
 /**
  * @author smoussinga
@@ -193,6 +194,9 @@ public class GameTest {
 		assertEquals(sb.toString(), game.getScoreMessage());
 	}
 
+	/**
+	 * Test the displayed message when a player win the match with 6 Games (set)
+	 */
 	@Test
 	public void displayMatchWinnerWithSixGamesMessageTest() {
 		// simulate the Set scores Player 1 : 5 - Player 2 : 4
@@ -230,11 +234,61 @@ public class GameTest {
 			fmt.format(MATCH_END_SCORE_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE);
 		}
 		assertEquals(sbWinWinTheMatch.toString(), game.getScoreMessage());
+		assertTrue(game.isGameOver());
 	}
 
+	/**
+	 * Test the displayed message when a player win the match with 7 Games and two
+	 * Games more than his opponent
+	 */
 	@Test
 	public void displayMatchWinnerWithSevenGamesMessageTest() {
+		// simulate the Set scores Player 1 : 5 - Player 2 : 6
+		game.setFirstGame(false);
+		for (int i = 0; i <= 4; i++) {
+			player1.winOneSet();
+		}
+		game.setPointWinner(1);
+		for (int i = 0; i <= 5; i++) {
+			player2.winOneSet();
+		}
+		game.setPointWinner(2);
+		// simulate the seventh game scores, Game scores Player 1 : 30 - Player 2 : 40
+		// (Set scores Player 1 : 5 - Player 2 : 6)
+		for (int i = 0; i <= 1; i++) {
+			player1.winOnePoint();
+		}
+		game.setPointWinner(1);
+		for (int i = 0; i <= 2; i++) {
+			player2.winOnePoint();
+		}
+		game.setPointWinner(2);
+		player2.winOnePoint();
+		// Player 2 win 1 Game (set)
+		// (Set scores Player 1 : 5 - Player 2 : 7)
+		StringBuilder sbWinOneGame = new StringBuilder(EMPTY_STRING);
+		try (Formatter fmt = new Formatter(sbWinOneGame)) {
+			fmt.format(GAME_END_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE, "0", PLAYER_TWO, "0", PLAYER_ONE,
+					"5", PLAYER_TWO, "7");
+		}
+		assertEquals(sbWinOneGame.toString(), game.getScoreMessage());
+		// Player 2 win the set and the match
+		StringBuilder sbWinWinTheMatch = new StringBuilder(EMPTY_STRING);
+		try (Formatter fmt = new Formatter(sbWinWinTheMatch)) {
+			fmt.format(MATCH_END_SCORE_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_TWO);
+		}
+		assertEquals(sbWinWinTheMatch.toString(), game.getScoreMessage());
+		assertTrue(game.isGameOver());
+	}
+
+	/**
+	 * Test the displayed message when the 2 players reached the score of 6 Games
+	 * and the Tie-Break rule is activated
+	 */
+	@Test
+	public void displayMatchWithTieBreakRuleActivatedMessageTest() {
 		// simulate the Set scores Player 1 : 6 - Player 2 : 6
+		// Tie-break rule is activated
 		game.setFirstGame(false);
 		for (int i = 0; i <= 5; i++) {
 			player1.winOneSet();
@@ -256,19 +310,133 @@ public class GameTest {
 		game.setPointWinner(2);
 		player2.winOnePoint();
 		// Player 2 win 1 Game (set)
-		// (Set scores Player 1 : 6 - Player 2 : 7)
+		// (Set scores Player 1 : 6 - Player 2 : 6)
+		// (Tie-break scores Player 1 : 0 - Player 2 : 1)
 		StringBuilder sbWinOneGame = new StringBuilder(EMPTY_STRING);
 		try (Formatter fmt = new Formatter(sbWinOneGame)) {
-			fmt.format(GAME_END_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE, "0", PLAYER_TWO, "0", PLAYER_ONE,
-					"6", PLAYER_TWO, "7");
+			fmt.format(TIE_BREAK_END_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE, "0", PLAYER_TWO, "0",
+					PLAYER_ONE, "6", PLAYER_TWO, "6", PLAYER_ONE, 0, PLAYER_TWO, 1);
 		}
 		assertEquals(sbWinOneGame.toString(), game.getScoreMessage());
-		// Player 2 win the set and the match
+		assertTrue(game.isTieBreakRule());
+		assertFalse(game.isGameOver());
+	}
+
+	/**
+	 * Test the displayed message when the 2 players reached the score of 6 Games,
+	 * the Tie-Break rule is activated, a player has two Games more than his
+	 * opponent but less than 7 Games - the Tie-Break rule is still activated
+	 */
+	@Test
+	public void displayMatchWithTieBreakRuleActivatedAndLessThanSevenGamesMessageTest() {
+		// simulate the Set scores Player 1 : 6 - Player 2 : 6
+		game.setFirstGame(false);
+		game.setTieBreakRule(true);
+		for (int i = 0; i <= 4; i++) {
+			player1.winOneSet();
+		}
+		game.setPointWinner(1);
+		for (int i = 0; i <= 4; i++) {
+			player2.winOneSet();
+		}
+		game.setPointWinner(2);
+		player1.winOneSet();
+		game.setPointWinner(1);
+		player2.winOneSet();
+		game.setPointWinner(2);
+		// simulate the Tie-break scores Player 1 : 4 - Player 2 : 3
+		for (int i = 0; i <= 3; i++) {
+			player1.winOneTieBreak();
+		}
+		game.setPointWinner(1);
+		for (int i = 0; i <= 2; i++) {
+			player2.winOneTieBreak();
+		}
+		game.setPointWinner(2);
+		// simulate the seventh game scores, Game scores Player 1 : 30 - Player 2 : 40
+		// (Set scores Player 1 : 6 - Player 2 : 6)
+		// (Tie-break scores Player 1 : 4 - Player 2 : 3)
+		for (int i = 0; i <= 1; i++) {
+			player2.winOnePoint();
+		}
+		game.setPointWinner(2);
+		for (int i = 0; i <= 2; i++) {
+			player1.winOnePoint();
+		}
+		game.setPointWinner(1);
+		player1.winOnePoint();
+		// Player 1 win 1 Game (Tie-break)
+		// (Set scores Player 1 : 6 - Player 2 : 6)
+		// (Tie-break scores Player 1 : 5 - Player 2 : 3)
+		StringBuilder sbWinOneGame = new StringBuilder(EMPTY_STRING);
+		try (Formatter fmt = new Formatter(sbWinOneGame)) {
+			fmt.format(TIE_BREAK_END_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE, "0", PLAYER_TWO, "0",
+					PLAYER_ONE, "6", PLAYER_TWO, "6", PLAYER_ONE, 5, PLAYER_TWO, 3);
+		}
+		assertEquals(sbWinOneGame.toString(), game.getScoreMessage());
+		assertTrue(game.isTieBreakRule());
+		assertFalse(game.isGameOver());
+	}
+
+	/**
+	 * Test the displayed message when a player win the match with and the Tie-Break
+	 * rule is activated
+	 */
+	@Test
+	public void displayMatchWinnerWithTieBreakRuleActivatedMessageTest() {
+		// simulate the Set scores Player 1 : 6 - Player 2 : 6
+		game.setFirstGame(false);
+		game.setTieBreakRule(true);
+		for (int i = 0; i <= 4; i++) {
+			player1.winOneSet();
+		}
+		game.setPointWinner(1);
+		for (int i = 0; i <= 4; i++) {
+			player2.winOneSet();
+		}
+		game.setPointWinner(2);
+		player1.winOneSet();
+		game.setPointWinner(1);
+		player2.winOneSet();
+		game.setPointWinner(2);
+		// simulate the Tie-break scores Player 1 : 9 - Player 2 : 8
+		for (int i = 0; i <= 8; i++) {
+			player1.winOneTieBreak();
+		}
+		game.setPointWinner(1);
+		for (int i = 0; i <= 7; i++) {
+			player2.winOneTieBreak();
+		}
+		game.setPointWinner(2);
+		// simulate the seventh game scores, Game scores Player 1 : 30 - Player 2 : 40
+		// (Set scores Player 1 : 6 - Player 2 : 6)
+		// (Tie-break scores Player 1 : 9 - Player 2 : 8)
+		for (int i = 0; i <= 1; i++) {
+			player2.winOnePoint();
+		}
+		game.setPointWinner(2);
+		for (int i = 0; i <= 2; i++) {
+			player1.winOnePoint();
+		}
+		game.setPointWinner(1);
+		player1.winOnePoint();
+		// Player 1 win 1 Game (Tie-break)
+		// (Set scores Player 1 : 6 - Player 2 : 6)
+		// (Tie-break scores Player 1 : 10 - Player 2 : 8)
+		StringBuilder sbWinOneGame = new StringBuilder(EMPTY_STRING);
+		try (Formatter fmt = new Formatter(sbWinOneGame)) {
+			fmt.format(TIE_BREAK_END_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE, "0", PLAYER_TWO, "0",
+					PLAYER_ONE, "6", PLAYER_TWO, "6", PLAYER_ONE, 10, PLAYER_TWO, 8);
+		}
+		assertEquals(sbWinOneGame.toString(), game.getScoreMessage());
+		// Player 1 win the set and the match
 		StringBuilder sbWinWinTheMatch = new StringBuilder(EMPTY_STRING);
 		try (Formatter fmt = new Formatter(sbWinWinTheMatch)) {
-			fmt.format(MATCH_END_SCORE_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_TWO);
+			fmt.format(MATCH_END_SCORE_FORMATTER_PATTERN, game.getPointWinner(), PLAYER_ONE);
 		}
 		assertEquals(sbWinWinTheMatch.toString(), game.getScoreMessage());
+		assertTrue(game.isTieBreakRule());
+		assertTrue(game.isGameOver());
 	}
 
 }

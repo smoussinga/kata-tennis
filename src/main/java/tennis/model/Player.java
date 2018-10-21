@@ -14,6 +14,8 @@ public class Player {
 	private String name;
 	private int score;
 	private int set;
+	private int tieBreak;
+
 	private static final List<String> POINTS_SCORES_IN_GAME = Arrays.asList("0", "15", "30", "40");
 	private static final List<String> SET_SCORES_IN_GAME = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7");
 
@@ -21,6 +23,7 @@ public class Player {
 		this.name = name;
 		this.score = 0;
 		this.set = 0;
+		this.tieBreak = 0;
 	}
 
 	public String getName() {
@@ -33,6 +36,10 @@ public class Player {
 
 	public int getSet() {
 		return this.set;
+	}
+
+	public int getTieBreak() {
+		return this.tieBreak;
 	}
 
 	public static List<String> getPointsScoresInGame() {
@@ -55,6 +62,13 @@ public class Player {
 	 */
 	public void winOneSet() {
 		this.set++;
+	}
+
+	/**
+	 * Increment the tieBreak score of a player
+	 */
+	public void winOneTieBreak() {
+		this.tieBreak++;
 	}
 
 	/**

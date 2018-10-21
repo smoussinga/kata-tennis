@@ -111,4 +111,15 @@ public class PlayerTest {
 		assertEquals("6", player.displayScoreSets());
 	}
 
+	/**
+	 * Test winOneTieBreak (win 1 Tie-Break) method
+	 */
+	@Test
+	public void scoreGameTieBreaksTest() {
+		assertEquals(0, player.getTieBreak());
+		for (int i = 0; i <= 8; i++) {
+			player.winOneTieBreak();
+		}
+		assertEquals(9, player.getTieBreak());
+	}
 }
