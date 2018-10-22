@@ -1,5 +1,6 @@
 package main.java.tennis.app;
 
+import java.util.Random;
 import java.util.Scanner;
 import main.java.tennis.business.Game;
 import main.java.tennis.model.Player;
@@ -33,12 +34,13 @@ public class KataTennisApp {
 		Player player2 = new Player(secondPlayerName.toString());
 		// Start the game
 		Game game = new Game(player1, player2);
+		Random random = new Random();
 		while (!game.isGameOver()) {
-			String scoreDisplay = game.getScoreMessage();
+			String scoreDisplay = game.displayScoreMainMessage();
 			if (!EMPTY_STRING.equals(scoreDisplay)) {
 				System.out.println(scoreDisplay + NEWLINE_STRING);
 			}
-			game.designRandomPointWinner();
+			game.chooseRandomPlayerToWinOnePoint(random);
 		}
 	}
 
